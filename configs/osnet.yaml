@@ -1,0 +1,6 @@
+MODEL:
+  WEIGHTS: ""
+  META_ARCHITECTURE: "OSNet"
+  BACKBONE:
+    NAME: "build_model"
+VERSION: 2
