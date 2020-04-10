@@ -7,6 +7,17 @@ from detectron2.config import CfgNode
 
 
 def build_pre_process(cfg: CfgNode, image):
+    """
+    图片的预处理
+    Parameters
+    ----------
+    cfg  配置文件导入的参数类
+    image opencv读入的图像
+
+    Returns
+    -------
+        图像Tensor
+    """
     means = cfg.PRE_PROCESS.MEAN
     stds = cfg.PRE_PROCESS.STD
     width = cfg.PRE_PROCESS.WIDTH
