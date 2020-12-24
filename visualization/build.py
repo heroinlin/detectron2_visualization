@@ -11,6 +11,8 @@ def build_visualization(cfg: CfgNode, model: torch.nn.Module, image_tensor:torch
     class_index = cfg.VISUALIZATION.CLASS_INDEX
     target_layer = cfg.VISUALIZATION.TARGET_LAYER
     visualization = None
+    if class_index == -1:
+        class_index = None
     if name == "grad_cam":
         grad_cam = GradCam(model, target_layer)
         visualization = grad_cam.generate_cam(image_tensor, class_index)

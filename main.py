@@ -8,6 +8,7 @@ from config import add_visualization_config
 from visualization import build_visualization
 from modeling import OSNet, parser_feature_and_classifier_layers
 from pre_process import build_pre_process
+import numpy as np
 from utils.misc_functions import save_gradient_images, convert_to_grayscale
 
 
@@ -56,6 +57,13 @@ def load_checkpoint(model, checkpoint_path):
     return model
 
 
+def show_cam_on_image(img, mask):
+    heatmap = cv2.applyColorMap(np.uint8(255 * mask), cv2.COLORMAP_JET)
+    heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
+    cam = cv2.addWeighted(img, 0.8, heatmap, 0.5, 0)
+    return cam
+
+
 def main():
     args = argument_parser()
     config_file_path = args.config_file
@@ -72,10 +80,14 @@ def main():
     visualization = build_visualization(cfg=cfg, model=model, image_tensor=image_tensor)
 
     image_name = os.path.basename(image_path)
-    file_name_to_export = image_name[::image_path.rfind('.')]
+    file_name_to_export = image_name[0:image_name.rfind('.')]
     save_gradient_images(visualization, os.path.join(args.save_folder, file_name_to_export + "_GGrad_Cam.jpg"))
     gray_visualization = convert_to_grayscale(visualization)
     save_gradient_images(gray_visualization, os.path.join(args.save_folder, file_name_to_export + "_GGrad_Cam_gray.jpg"))
+    gray_visualization = gray_visualization.transpose([1, 2, 0])
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    cam_on_src = show_cam_on_image(image, gray_visualization)
+    cv2.imwrite(os.path.join(args.save_folder, file_name_to_export + "_GGrad_Cam_On_src.jpg"), cam_on_src)
 
 
 if __name__ == "__main__":
